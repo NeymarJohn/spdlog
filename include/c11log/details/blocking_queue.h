@@ -58,7 +58,8 @@ public:
     // If the queue is full, block the calling thread until there is room.
     template<typename TT>
     void push(TT&& item) {
-        while (!push(std::forward<TT>(item), std::chrono::hours(1)));
+        constexpr std::chrono::hours one_hour(1);
+        while (!push(std::forward<TT>(item), one_hour));
     }
 
     // Pop a copy of the front item in the queue into the given item ref.
@@ -85,7 +86,8 @@ public:
     // Pop a copy of the front item in the queue into the given item ref.
     // If the queue is empty, block the calling thread util there is item to pop.
     void pop(T& item) {
-        while (!pop(item, std::chrono::hours(1)));
+        constexpr std::chrono::hours one_hour(1);
+        while (!pop(item, one_hour));
     }
 
     // Clear the queue

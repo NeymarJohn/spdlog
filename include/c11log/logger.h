@@ -30,10 +30,8 @@ public:
         _logger_name(name),
         _formatter(new formatters::default_formatter()),
         _sinks(),
-        _mutex()
-    {
-        //Seems that vs2013 doesnt support atomic member initialization in ctor, so its done here
-        _atomic_level = level::INFO;
+        _mutex(),
+        _atomic_level(level::INFO) {
     }
 
     ~logger() = default;

@@ -61,7 +61,7 @@ inline void c11log::sinks::async_sink::_sink_it(const std::string& msg)
 
 inline void c11log::sinks::async_sink::_thread_loop()
 {
-    static std::chrono::seconds  pop_timeout { 1 };
+    constexpr auto pop_timeout = std::chrono::seconds(1);
     std::string msg;
 
     while (_active) {
