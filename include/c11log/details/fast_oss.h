@@ -10,14 +10,18 @@ public:
     str_devicebuf() = default;
     ~str_devicebuf() = default;
     str_devicebuf(const str_devicebuf& other):std::streambuf(),_str(other._str) {}
-    str_devicebuf& operator=(const str_devicebuf other) {
-        if(this != &other)
-            _str = other._str;
-        return *this;
+
+    str_devicebuf(str_devicebuf&& other) :std::streambuf(), _str(std::move(other._str)) {
+        other._str.clear();
     }
-    
+
+    str_devicebuf& operator=(const str_devicebuf&) = delete;
+    str_devicebuf& operator=(str_devicebuf&&) = delete;
+
+
     const std::string& str_ref() const {
         return _str;
+        std::ostringstream oss;
     }
 
     void clear() {
@@ -47,13 +51,14 @@ class fast_oss:public std::ostream {
 public:
     fast_oss():std::ostream(&_dev) {}
     ~fast_oss() = default;
-    fast_oss(const fast_oss& other):std::basic_ios<char>(), std::ostream(),_dev(other._dev) {}
-    fast_oss& operator=(const fast_oss& other) {
-        if(&other != this)
-            _dev = other._dev;
-        return *this;
-    }
-        
+
+    fast_oss(const fast_oss& other) :std::basic_ios<char>(), std::ostream(&_dev), _dev(other._dev) {}
+
+    fast_oss(fast_oss&& other) :std::basic_ios<char>(), std::ostream(&_dev), _dev(std::move(other._dev)) {}
+
+    fast_oss& operator=(const fast_oss& other) = delete;
+
+
     const std::string& str_ref() const {
         return _dev.str_ref();
     }

@@ -30,8 +30,10 @@ public:
         _logger_name(name),
         _formatter(new formatters::default_formatter()),
         _sinks(),
-        _mutex(),
-        _atomic_level(level::INFO) {
+        _mutex()
+    {
+        //Seems that vs2013 doesnt support atomic member initialization in ctor, so its done here
+        _atomic_level = level::INFO;
     }
 
     ~logger() = default;
@@ -64,7 +66,7 @@ private:
     std::mutex _mutex;
     std::atomic_int _atomic_level;
 
-    void _log_it(const std::string& msg);
+    void _log_it(const std::string& msg, const level::level_enum level);
 
 };
 
@@ -83,11 +85,7 @@ logger& get_logger(const std::string& name);
 #include "details/line_logger.h"
 inline c11log::details::line_logger c11log::logger::log(c11log::level::level_enum msg_level)
 {
-
-    if (msg_level >= _atomic_level)
-        return details::line_logger(this, msg_level);
-    else
-        return details::line_logger(nullptr);
+    return details::line_logger(this, msg_level, msg_level >= _atomic_level);
 }
 
 inline c11log::details::line_logger c11log::logger::debug()
@@ -155,9 +153,8 @@ inline bool c11log::logger::should_log(c11log::level::level_enum level) const
 {
     return level >= _atomic_level.load();
 }
-inline void c11log::logger::_log_it(const std::string& msg)
+inline void c11log::logger::_log_it(const std::string& msg, const level::level_enum level)
 {
-    level::level_enum level = static_cast<level::level_enum>(_atomic_level.load());
     std::lock_guard<std::mutex> lock(_mutex);
     for (auto &sink : _sinks)
         sink->log(msg, level);
