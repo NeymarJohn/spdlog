@@ -305,7 +305,7 @@ public:
         std::lock_guard<std::mutex> l(_mutex);
         using namespace std::chrono;
         auto diff = msg.time - _last_update;
-        auto secs_diff = abs((duration_cast<seconds>(diff)).count());
+        auto secs_diff = std::abs((duration_cast<seconds>(diff)).count());
         if (secs_diff >= 2)
         {
             _value = get_value(msg);
@@ -457,7 +457,7 @@ inline void spdlog::pattern_formatter::handle_flag(char flag)
 {
     switch (flag)
     {
-    // logger name
+        // logger name
     case 'n':
         _formatters.push_back(std::unique_ptr<details::flag_formatter>(new details::name_formatter()));
         break;
