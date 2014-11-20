@@ -53,7 +53,8 @@ namespace sinks
 class async_sink : public base_sink < details::null_mutex >
 {
 public:
-    using q_type = details::blocking_queue < std::unique_ptr<details::log_msg> > ;
+    using data_type = std::pair < const char*, size_t > ;
+    using q_type = details::blocking_queue < data_type > ;
 
     explicit async_sink(const q_type::size_type max_queue_size);
 
@@ -64,19 +65,15 @@ public:
     q_type& q();
     //Wait to remaining items (if any) in the queue to be written and shutdown
     void shutdown(const std::chrono::milliseconds& timeout);
-    void set_formatter(formatter_ptr formatter) { _formatter = formatter; }
-
 
 
 
 protected:
-    void _sink_it(const details::log_msg& msg) override;
-	
-    
+    void _sink_it(const char*, size_t) override;
+    void _thread_loop();
 
 private:
-    void _thread_loop();
-    std::vector<std::shared_ptr<sink>> _sinks; 
+    std::vector<std::shared_ptr<sink>> _sinks;
     std::atomic<bool> _active;
     q_type _q;
     std::thread _back_thread;
@@ -84,8 +81,7 @@ private:
     //Last exception thrown from the back thread
     std::shared_ptr<spdlog_ex> _last_backthread_ex;
 
-    //formatter
-    formatter_ptr _formatter;
+
     //will throw last back thread exception or if backthread no active
     void _push_sentry();
 
@@ -111,11 +107,12 @@ inline spdlog::sinks::async_sink::~async_sink()
     _join();
 }
 
-inline void spdlog::sinks::async_sink::_sink_it(const details::log_msg& msg)
+inline void spdlog::sinks::async_sink::_sink_it(const char* data, size_t size)
 {
-    using namespace spdlog::details;
-    _push_sentry();      
-    _q.push(std::unique_ptr<log_msg>(new log_msg(msg)));
+    _push_sentry();
+    auto data_copy = new char[size];
+    std::memcpy(data_copy, data, size);
+    _q.push(data_type(data_copy, size));
 }
 
 
@@ -126,31 +123,34 @@ inline void spdlog::sinks::async_sink::_thread_loop()
     while (_active)
     {
         q_type::item_type msg;
-        if (_q.pop(msg, pop_timeout))
+        if (!_q.pop(msg, pop_timeout))
+            continue;
+
+
+        if (!_active)
+            return;
+
+        for (auto &s : _sinks)
         {
-            if (!_active)
-                return;	              
-            _formatter->format(*msg);
-            for (auto &s : _sinks)
+            try
             {
-                try
-                {
-                    s->log(*msg);
-                }
-
-                catch (const std::exception& ex)
-                {
-                    _last_backthread_ex = std::make_shared<spdlog_ex>(ex.what());
-                }
-                catch (...)
-                {
-                    _last_backthread_ex = std::make_shared<spdlog_ex>("Unknown exception");
-                }
-
+                s->sink_it(msg.first, msg.second);
             }
+
+            catch (const std::exception& ex)
+            {
+                _last_backthread_ex = std::make_shared<spdlog_ex>(ex.what());
+            }
+            catch (...)
+            {
+                _last_backthread_ex = std::make_shared<spdlog_ex>("Unknown exception");
+            }
+
         }
+        delete[] msg.first;
     }
 }
+
 
 inline void spdlog::sinks::async_sink::add_sink(spdlog::sink_ptr s)
 {
