@@ -26,6 +26,7 @@
 
 #include "../common.h"
 #include "../logger.h"
+#include "fast_oss.h"
 
 
 // Line logger class - aggregates operator<< calls to fast ostream
@@ -79,19 +80,12 @@ public:
         }
     }
 
-    template <typename... Args>
-    void write(const std::string& fmt, const Args&... args)
-    {
-        _log_msg.raw.write(fmt, args...);
-    }
-
     template<typename T>
     line_logger& operator<<(const T& what)
     {
         write(what);
         return *this;
     }
-
 
     void disable()
     {
