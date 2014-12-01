@@ -28,7 +28,8 @@
 #include "base_sink.h"
 #include "../details/null_mutex.h"
 #include "../details/file_helper.h"
-#include "../details/format.h"
+#include "../details/fast_oss.h"
+
 
 
 namespace spdlog
@@ -99,12 +100,12 @@ protected:
 private:
     static std::string calc_filename(const std::string& filename, std::size_t index, const std::string& extension)
     {
-        fmt::MemoryWriter w;
+        details::fast_oss oss;
         if (index)
-            w.write("{}.{}.{}", filename, index, extension);
+            oss << filename << "." << index << "." << extension;
         else
-            w.write("{}.{}", filename, extension);
-        return w.str();
+            oss << filename << "." << extension;
+        return oss.str();
     }
 
 
@@ -196,9 +197,11 @@ private:
     static std::string calc_filename(const std::string& basename, const std::string& extension)
     {
         std::tm tm = spdlog::details::os::localtime();
-        fmt::MemoryWriter w;
-        w.write("{}.{:04d}-{:02d}-{:02d}.{}", basename, tm.tm_year + 1900, tm.tm_mon + 1, tm.tm_mday, extension);
-        return w.str();
+        details::fast_oss oss;
+        oss << basename << '.';
+        oss << tm.tm_year + 1900 << '-' << std::setw(2) << std::setfill('0') << tm.tm_mon + 1 << '-' << tm.tm_mday;
+        oss << '.' << extension;
+        return oss.str();
     }
 
     std::string _base_filename;

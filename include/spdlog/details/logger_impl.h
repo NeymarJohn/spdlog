@@ -66,73 +66,73 @@ inline void spdlog::logger::set_pattern(const std::string& pattern)
 
 
 template <typename... Args>
-inline spdlog::details::line_logger spdlog::logger::log(level::level_enum lvl, const std::string& fmt, const Args&... args)
+inline spdlog::details::line_logger spdlog::logger::log(level::level_enum lvl, const Args&... args)
 {
     bool msg_enabled = should_log(lvl);
     details::line_logger l(this, lvl, msg_enabled);
     if (msg_enabled)
-        l.write(fmt, args...);
+        _variadic_log(l, args...);
     return l;
 }
 
 template <typename... Args>
-inline spdlog::details::line_logger spdlog::logger::log(const std::string& fmt, const Args&... args)
+inline spdlog::details::line_logger spdlog::logger::log(const Args&... args)
 {
-    return log(level::ALWAYS, fmt, args...);
+    return log(level::ALWAYS, args...);
 }
 
 template <typename... Args>
-inline spdlog::details::line_logger spdlog::logger::trace(const std::string& fmt, const Args&... args)
+inline spdlog::details::line_logger spdlog::logger::trace(const Args&... args)
 {
-    return log(level::TRACE, fmt, args...);
+    return log(level::TRACE, args...);
 }
 
 template <typename... Args>
-inline spdlog::details::line_logger spdlog::logger::debug(const std::string& fmt, const Args&... args)
+inline spdlog::details::line_logger spdlog::logger::debug(const Args&... args)
 {
-    return log(level::DEBUG, fmt, args...);
+    return log(level::DEBUG, args...);
 }
 
 template <typename... Args>
-inline spdlog::details::line_logger spdlog::logger::info(const std::string& fmt, const Args&... args)
+inline spdlog::details::line_logger spdlog::logger::info(const Args&... args)
 {
-    return log(level::INFO, fmt, args...);
+    return log(level::INFO, args...);
 }
 
 template <typename... Args>
-inline spdlog::details::line_logger spdlog::logger::notice(const std::string& fmt, const Args&... args)
+inline spdlog::details::line_logger spdlog::logger::notice(const Args&... args)
 {
-    return log(level::NOTICE, fmt, args...);
+    return log(level::NOTICE, args...);
 }
 
 template <typename... Args>
-inline spdlog::details::line_logger spdlog::logger::warn(const std::string& fmt, const Args&... args)
+inline spdlog::details::line_logger spdlog::logger::warn(const Args&... args)
 {
-    return log(level::WARN, fmt, args...);
+    return log(level::WARN, args...);
 }
 
 template <typename... Args>
-inline spdlog::details::line_logger spdlog::logger::error(const std::string& fmt, const Args&... args)
+inline spdlog::details::line_logger spdlog::logger::error(const Args&... args)
 {
-    return log(level::ERR, fmt, args...);
+    return log(level::ERR, args...);
 }
 
 template <typename... Args>
-inline spdlog::details::line_logger spdlog::logger::critical(const std::string& fmt, const Args&... args)
+inline spdlog::details::line_logger spdlog::logger::critical(const Args&... args)
 {
-    return log(level::CRITICAL, fmt, args...);
+    return log(level::CRITICAL, args...);
 }
 
 template <typename... Args>
-inline spdlog::details::line_logger spdlog::logger::alert(const std::string& fmt, const Args&... args)
+inline spdlog::details::line_logger spdlog::logger::alert(const Args&... args)
 {
-    return log(level::ALERT, fmt, args...);
+    return log(level::ALERT, args...);
 }
 
 template <typename... Args>
-inline spdlog::details::line_logger spdlog::logger::emerg(const std::string& fmt, const Args&... args)
+inline spdlog::details::line_logger spdlog::logger::emerg(const Args&... args)
 {
-    return log(level::EMERG, fmt, args...);
+    return log(level::EMERG, args...);
 }
 
 inline const std::string& spdlog::logger::name() const
@@ -182,7 +182,24 @@ inline void spdlog::logger::_stop()
     set_level(level::OFF);
 }
 
+/* private functions */
+inline void spdlog::logger::_variadic_log(spdlog::details::line_logger&) {}
 
+template <typename Last>
+inline void spdlog::logger::_variadic_log(spdlog::details::line_logger& l, const Last& last)
+{
+    l.write(last);
+}
+
+
+
+template <typename First, typename... Rest>
+inline void spdlog::logger::_variadic_log(spdlog::details::line_logger& l, const First& first, const Rest&... rest)
+{
+    l.write(first);
+    l.write(' ');
+    _variadic_log(l, rest...);
+}
 
 
 
