@@ -161,10 +161,11 @@ inline void spdlog::details::async_log_helper::log(const details::log_msg& msg)
     if (!_q.push(std::unique_ptr < async_msg >(new async_msg(msg))))
     {
         auto last_op_time = clock::now();
-        while (!_q.push(std::unique_ptr < async_msg >(new async_msg(msg))))
+        do
         {
             _sleep_or_yield(last_op_time);
         }
+        while (!_q.push(std::unique_ptr < async_msg >(new async_msg(msg))));
     }
 }
 
@@ -199,7 +200,7 @@ inline void spdlog::details::async_log_helper::_thread_loop()
                 _last_workerthread_ex = std::make_shared<spdlog_ex>("Unknown exception");
             }
         }
-        //Sleep for a while if empty.
+        // sleep or yield if queue is empty.
         else
         {
             _sleep_or_yield(last_pop);
