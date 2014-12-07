@@ -1,10 +1,10 @@
 CXX	= g++
-CXXFLAGS	= -march=native -Wall -Wextra -Wshadow -pedantic -std=c++11 -pthread -Wl,--no-as-needed  -I../include 
+CXXFLAGS	= -march=native -Wall -Wshadow -Wextra -pedantic -std=c++11 -pthread -Wl,--no-as-needed  -I../include 
 CXX_RELEASE_FLAGS = -O3 -flto
 CXX_DEBUG_FLAGS= -g 
 
 
-all:	example bench
+all:	bench
 debug: example-debug bench-debug
 
 example: example.cpp
