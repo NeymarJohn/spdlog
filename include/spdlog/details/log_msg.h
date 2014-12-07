@@ -25,7 +25,7 @@
 #pragma once
 
 #include "../common.h"
-#include "./format.h"
+#include "./fast_oss.h"
 
 namespace spdlog
 {
@@ -38,31 +38,25 @@ struct log_msg
         logger_name(),
         level(l),
         time(),
+        tm_time(),
         raw(),
         formatted() {}
 
-
-    log_msg(const log_msg& other) :
+    log_msg(const log_msg& other):
         logger_name(other.logger_name),
         level(other.level),
-        time(other.time)
-    {
-        if (other.raw.size())
-            raw << fmt::BasicStringRef<char>(other.raw.data(), other.raw.size());
-        if (other.formatted.size())
-            formatted << fmt::BasicStringRef<char>(other.formatted.data(), other.formatted.size());
-
-    }
+        time(other.time),
+        tm_time(other.tm_time),
+        raw(other.raw),
+        formatted(other.formatted) {}
 
     log_msg(log_msg&& other) :
         logger_name(std::move(other.logger_name)),
         level(other.level),
         time(std::move(other.time)),
+        tm_time(other.tm_time),
         raw(std::move(other.raw)),
-        formatted(std::move(other.formatted))
-    {
-        other.clear();
-    }
+        formatted(std::move(other.formatted)) {}
 
     log_msg& operator=(log_msg&& other)
     {
@@ -72,15 +66,16 @@ struct log_msg
         logger_name = std::move(other.logger_name);
         level = other.level;
         time = std::move(other.time);
+        tm_time = other.tm_time;
         raw = std::move(other.raw);
         formatted = std::move(other.formatted);
-        other.clear();
         return *this;
     }
 
+
+
     void clear()
     {
-        level = level::OFF;
         raw.clear();
         formatted.clear();
     }
@@ -88,8 +83,9 @@ struct log_msg
     std::string logger_name;
     level::level_enum level;
     log_clock::time_point time;
-    fmt::MemoryWriter raw;
-    fmt::MemoryWriter formatted;
+    std::tm tm_time;
+    fast_oss raw;
+    fast_oss formatted;
 };
 }
 }

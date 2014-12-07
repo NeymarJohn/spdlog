@@ -24,7 +24,7 @@
 
 #pragma once
 
-#include <ostream>
+#include <iostream>
 #include <mutex>
 #include <memory>
 
@@ -47,7 +47,8 @@ public:
 protected:
     virtual void _sink_it(const details::log_msg& msg) override
     {
-        _ostream.write(msg.formatted.data(), msg.formatted.size());
+        auto& buf = msg.formatted.buf();
+        _ostream.write(buf.data(), buf.size());
     }
     std::ostream& _ostream;
 };

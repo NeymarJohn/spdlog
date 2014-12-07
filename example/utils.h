@@ -24,6 +24,7 @@
 
 #pragma once
 
+#include <iostream>
 #include <sstream>
 #include <iomanip>
 #include <locale>

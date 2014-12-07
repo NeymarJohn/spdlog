@@ -27,7 +27,7 @@
 //
 #include <iostream>
 #include "spdlog/spdlog.h"
-#include "spdlog/details/format.h"
+
 
 int main(int, char* [])
 {
@@ -36,8 +36,6 @@ int main(int, char* [])
 
     try
     {
-    	fmt::print("Hello man {} {:1f}\n", 1, 2.2);
-    	return 0;
         std::string filename = "logs/spdlog_example";
         // Set log level to all loggers to DEBUG and above
         spd::set_level(spd::level::DEBUG);
@@ -47,12 +45,16 @@ int main(int, char* [])
         auto console = spd::stdout_logger_mt("console");
         console->info("Welcome to spdlog!") ;
         console->info("An info message example", "...", 1, 2, 3.5);
-        console->info() << "Streams are supported too  " << 1;
+        console->info() << "Streams are supported too  " << std::setw(5) << std::setfill('0') << 1;
 
         //Create a file rotating logger with 5mb size max and 3 rotated files
         auto file_logger = spd::rotating_logger_mt("file_logger", filename, 1024 * 1024 * 5, 3);
         file_logger->info("Log file message number", 1);
 
+        for (int i = 0; i < 100; ++i)
+        {
+            file_logger->info(i, "in hex is", "0x") <<  std::hex << std::uppercase << i;
+        }
 
         spd::set_pattern("*** [%H:%M:%S %z] [thread %t] %v ***");
         file_logger->info("This is another message with custom format");
@@ -65,6 +67,7 @@ int main(int, char* [])
         // Asynchronous logging is easy..
         // Just call spdlog::set_async_mode(max_q_size) and all created loggers from now on will be asynchronous..
         //
+
         size_t max_q_size = 100000;
         spdlog::set_async_mode(max_q_size);
         auto async_file= spd::daily_logger_st("async_file_logger", "logs/async_log.txt");

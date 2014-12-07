@@ -24,15 +24,10 @@
 
 #pragma once
 
-// Very fast asynchronous logger (millions of logs per second on an average desktop)
-// Uses pre allocated lockfree queue for maximum throughput even under large number of threads.
-// Creates a single back thread to pop messages from the queue and log them.
-//
+// Async logger
 // Upon each log write the logger:
-//    1. Checks if its log level is enough to log the message
-//    2. Push a new copy of the message to a queue (or block the caller until space is available in the queue)
-//    3. will throw spdlog_ex upon log exceptions
-// Upong destruction, logs all remaining messages in the queue before destructing..
+// 1. Checks if its log level is enough to log the message
+// 2. Push a new copy of the message to a queue (uses sinks::async_sink for this)
 
 #include <chrono>
 #include "common.h"
@@ -42,18 +37,18 @@
 namespace spdlog
 {
 
-namespace details
+namespace sinks
 {
-class async_log_helper;
+class async_sink;
 }
 
 class async_logger :public logger
 {
 public:
     template<class It>
-    async_logger(const std::string& name, const It& begin, const It& end, size_t queue_size);
-    async_logger(const std::string& logger_name, sinks_init_list sinks, size_t queue_size);
-    async_logger(const std::string& logger_name, sink_ptr single_sink, size_t queue_size);
+    async_logger(const std::string& name, const It& begin, const It& end, size_t queue_size, const log_clock::duration& shutdown_duration);
+    async_logger(const std::string& logger_name, sinks_init_list sinks, size_t queue_size, const log_clock::duration& shutdown_duration);
+    async_logger(const std::string& logger_name, sink_ptr single_sink, size_t queue_size, const log_clock::duration& shutdown_duration);
 
 
 protected:
@@ -63,7 +58,8 @@ protected:
     void _stop() override;
 
 private:
-    std::unique_ptr<details::async_log_helper> _async_log_helper;
+    log_clock::duration _shutdown_duration;
+    std::unique_ptr<sinks::async_sink> _as;
 };
 }
 

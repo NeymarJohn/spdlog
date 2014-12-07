@@ -18,9 +18,7 @@ Just copy the files to your build tree and use a C++11 compiler
 * Headers only.
 * No dependencies.
 * Cross platform - Linux / Windows on 32/64 bits.
-* **new**! Feature rich [cppfromat call style](http://cppformat.readthedocs.org/en/stable/syntax.html) using the excellent [cppformat](http://cppformat.github.io/) library:```logger.info("Hello {} !!", "world");```
-* ostream call style ```logger.info() << "Hello << "logger";```
-* Mixed cppformat/ostream call style ```logger.info("{} + {} = ", 1, 2) << "?";```
+* Variadic-template/stream call styles: ```logger.info("variadic", x, y) << "or stream" << z;```
 * [Custom](https://github.com/gabime/spdlog/wiki/Custom-formatting) formatting.
 * Multi/Single threaded loggers.
 * Various log targets:
@@ -29,7 +27,7 @@ Just copy the files to your build tree and use a C++11 compiler
     * Console logging.
     * Linux syslog.
     * Easily extendable with custom log targets  (just implement a single function in the [sink](include/spdlog/sinks/sink.h) interface).
-* Optional, (extremly fast!), async logging.
+* Optional async logging .
 * Log levels.
 
 
@@ -37,12 +35,12 @@ Just copy the files to your build tree and use a C++11 compiler
 
 ## Benchmarks
 
-Below are some [benchmarks](bench) comparing the time needed to log 1,000,000 lines to file under Ubuntu 64 bit, Intel i7-4770 CPU @ 3.40GHz:
+Below are some [benchmarks](bench) comparing the time needed to log 1,000,000 lines to file under Ubuntu 64 bit, Intel i7-4770 CPU @ 3.40GHz (the best of 3 runs for each logger):
 
 |threads|boost log|glog|g2log|spdlog|spdlog <sup>async mode</sup>|
 |-------|:-------:|:-----:|------:|------:|------:|
-|1|4.779s|1.109s|3.155s|0.947s|1.455s
-|10|15.151ss|3.546s|3.500s|1.549s|2.040s|
+|1|4.779s|1.109s|3.155s|0.319s|0.212s
+|10|15.151ss|3.546s|3.500s|0.641s|0.199s|
 
 
 
@@ -61,27 +59,17 @@ int main(int, char* [])
         std::string filename = "spdlog_example";
         auto console = spd::stdout_logger_mt("console");
         console->info("Welcome to spdlog!") ;
-        console->info("Creating file {}..", filename);
+        console->info() << "Creating file " << filename << "..";
 
         auto file_logger = spd::rotating_logger_mt("file_logger", filename, 1024 * 1024 * 5, 3);
-        file_logger->info("Log file message number {}..", 1);
+        file_logger->info("Log file message number", 1);
 
-        for (int j = 1; j <= 10; ++j)
-           for (int i = 1; i < 10; ++i)
-             file_logger->info("{} * {} equals {}, i, j, i*j );
-        
-        console->info("Easy padding in numbers like {:08d}", 12);
-        console->info("Support for int: {0:d};  hex: {0:x};  oct: {0:o}; bin: {0:b}", 42);
-        console->infor("Supprot for floats {:03.2f}", 1.23456);
-        console->info("Positional args are {1} {0}..", "too", "supported): 
-        
-        console->info("{:<30}", "left aligned");
-        console->info("{:>30}", "right aligned");
-        console->info("{:^30}", "centered");
-        
-        //see cppformat's full docs here:
-        //http://cppformat.readthedocs.org/en/stable/syntax.html
-        
+        for (int i = 0; i < 100; ++i)
+        {
+            auto square = i*i;
+            file_logger->info() << i << '*' << i << '=' << square << " (" << "0x" << std::hex << square << ")";
+        }
+
         // Change log level to all loggers to warning and above
         spd::set_level(spd::level::WARN);
         console->info("This should not be displayed");
