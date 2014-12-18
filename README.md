@@ -17,7 +17,7 @@ Just copy the files to your build tree and use a C++11 compiler
 * No dependencies - just copy and use.
 * Cross platform - Linux / Windows on 32/64 bits.
 * **new!** Feature rich [call style](#usage-example) using the excellent [cppformat](http://cppformat.github.io/) library.
-* Optional ostream call style.
+* ostream call style is supported too.
 * Extremely fast asynchronous mode (optional) - use of lockfree queues and other tricks to reach millions  of calls per second from multiple threads.
 * [Custom](https://github.com/gabime/spdlog/wiki/Custom-formatting) formatting.
 * Multi/Single threaded loggers.
@@ -81,8 +81,8 @@ int main(int, char* [])
 
         spd::get("console")->info("loggers can be retrieved from a global registry using the spdlog::get(logger_name) function");
 
-        SPDLOG_TRACE(console, "Trace message - enabled only #ifdef SPDLOG_TRACE_ON..{} ,{}", 1, 3.23);
-        SPDLOG_DEBUG(console, "Debug message - enabled only #ifdef SPDLOG_DEBUG_ON.. {} ,{}", 1, 3.23);
+        SPDLOG_TRACE(console, "Enabled only #ifdef SPDLOG_TRACE_ON..{} ,{}", 1, 3.23);
+        SPDLOG_DEBUG(console, "Enabled only #ifdef SPDLOG_DEBUG_ON.. {} ,{}", 1, 3.23);
 
         //
         // Asynchronous logging is very fast..
