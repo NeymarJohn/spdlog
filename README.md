@@ -81,8 +81,7 @@ int main(int, char* [])
 
         spd::get("console")->info("loggers can be retrieved from a global registry using the spdlog::get(logger_name) function");
 
-        SPDLOG_TRACE(console, "Enabled only #ifdef SPDLOG_TRACE_ON..{} ,{}", 1, 3.23);
-        SPDLOG_DEBUG(console, "Enabled only #ifdef SPDLOG_DEBUG_ON.. {} ,{}", 1, 3.23);
+        SPDLOG_TRACE(file_logger, "This is a trace message (only #ifdef _DEBUG)", 123);
 
         //
         // Asynchronous logging is very fast..
@@ -97,7 +96,8 @@ int main(int, char* [])
         // syslog example
         //
 #ifdef __linux__
-        auto syslog_logger = spd::syslog_logger("syslog");
+        std::string ident = "my_app";
+        auto syslog_logger = spd::syslog_logger("syslog", ident, spd::sinks::syslog::option::PID | spd::sinks::syslog::option::PERROR, "mail" );
         syslog_logger->warn("This is warning that will end up in syslog. This is Linux only!");
 #endif
     }

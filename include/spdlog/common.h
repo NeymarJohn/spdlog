@@ -27,13 +27,42 @@
 #include<initializer_list>
 #include<chrono>
 
+#ifdef __linux__
+
+#define SYSLOG_NAMES 1
+#include <syslog.h>
+#endif
+
 namespace spdlog
 {
+
 class formatter;
+
 namespace sinks
 {
+
 class sink;
+
+#ifdef __linux__
+namespace syslog
+{
+namespace option
+{
+typedef enum
+{
+    CONS     = LOG_CONS,
+    NDELAY   = LOG_NDELAY,
+    NOWAIT   = LOG_NOWAIT,
+    ODELAY   = LOG_ODELAY,
+    PERROR   = LOG_PERROR,
+    PID      = LOG_PID
+} option_enum;
 }
+}
+#endif
+
+}
+
 
 // Common types across the lib
 using log_clock = std::chrono::system_clock;
@@ -55,11 +84,13 @@ typedef enum
     CRITICAL = 6,
     ALERT    = 7,
     EMERG    = 8,
-    OFF      = 9
+    ALWAYS   = 9,
+    OFF      = 10
 } level_enum;
 
-static const char* level_names[] { "trace", "debug", "info", "notice", "warning", "error", "critical", "alert", "emerg", "off"};
-
+static const char* level_names[] { "trace", "debug", "info", "notice", "warning", "error", "critical",
+                                   "alert", "emerg", "", ""
+                                 };
 inline const char* to_str(spdlog::level::level_enum l)
 {
     return level_names[l];
