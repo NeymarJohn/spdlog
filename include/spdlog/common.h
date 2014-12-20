@@ -27,21 +27,12 @@
 #include<initializer_list>
 #include<chrono>
 
-//visual studio does not support noexcept yet
-#ifndef _MSC_VER
-#define SPDLOG_NOEXCEPT noexcept
-#else
-#define SPDLOG_NOEXCEPT
-#endif
-
 namespace spdlog
 {
 
 class formatter;
 
-namespace sinks {
-class sink;
-}
+namespace sinks { class sink;}
 
 // Common types across the lib
 using log_clock = std::chrono::system_clock;
@@ -80,8 +71,8 @@ inline const char* to_str(spdlog::level::level_enum l)
 class spdlog_ex : public std::exception
 {
 public:
-    spdlog_ex(const std::string& msg) :_msg(msg) {}
-    const char* what() const SPDLOG_NOEXCEPT override
+    spdlog_ex(const std::string& msg) :_msg(msg) {};
+    const char* what() const throw() override
     {
         return _msg.c_str();
     }
