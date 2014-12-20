@@ -33,22 +33,26 @@ Just copy the files to your build tree and use a C++11 compiler
 
 ## Benchmarks
 
-Below are some [benchmarks](bench) comparing the time needed to log 1,000,000 lines to file under Ubuntu 64 bit, Intel i7-4770 CPU @ 3.40GHz (the best of 3 runs for each logger):
+Below are some [benchmarks](bench) comparing popular log libraries under Ubuntu 64 bit, Intel i7-4770 CPU @ 3.40GHz 
 
-### Synchronous mode
+#### Synchronous mode
+Time needed to log 1,000,000 lines under synchronous mode (in seconds, the best of 3 runs):
+
 |threads|boost log|glog   |easylogging |spdlog|
 |-------|:-------:|:-----:|----------:|------:|
-|1|       4.169s  |1.066s |0.975s     :|0.302s|
-|10|     16.029   |3.032s |2.857      :|0.968s|
-|100|     15.008  |1.139s |4.512s     :|0.497s|
+|1|       4.169s  |1.066s |0.975s     |0.302s|
+|10|     16.029   |3.032s |2.857s     |0.968s|
+|100|     15.008  |1.139s |4.512s     |0.497s|
 
 
-### ASynchronous mode 
+#### Asynchronous mode 
+Time needed to log 1,000,000 lines under asynchronous mode, i.e. the time it takes to put them in the async queue (in seconds, the best of 3 runs):
+
 |threads|g2log   |spdlog<sup>async mode</sup>|
-|:-------|----- :|:-------------------------:|
-|1|       1.850s |0.216s 
-|10|      0.943s  |0.173s
-|100|      0.959s |0.202
+|:-------|:-----:|-------------------------:|
+|1|       1.850s |0.216s |
+|10|      0.943s  |0.173s|
+|100|      0.959s |0.202s|
 
 
 
@@ -64,7 +68,7 @@ int main(int, char* [])
     try
     {
         // Set log level to all loggers to DEBUG and above
-        spd::set_level(spd::level::DEBUG);
+        spd::set_level(spd::level::debug);
 
         //Create console, multithreaded logger
         auto console = spd::stdout_logger_mt("console");
@@ -83,7 +87,7 @@ int main(int, char* [])
        
         //Create a file rotating logger with 5mb size max and 3 rotated files
         auto file_logger = spd::rotating_logger_mt("file_logger", "logs/mylogfile", 1048576 * 5, 3);
-        file_logger->set_level(spd::level::INFO);
+        file_logger->set_level(spd::level::info);
         for(int i = 0; i < 10; ++i)
 		      file_logger->info("{} * {} equals {:>10}", i, i, i*i);
 
@@ -110,7 +114,7 @@ int main(int, char* [])
         //
 #ifdef __linux__
         std::string ident = "my_app";
-        auto syslog_logger = spd::syslog_logger("syslog", ident, spd::sinks::syslog::option::PID | spd::sinks::syslog::option::PERROR, "mail" );
+        auto syslog_logger = spd::syslog_logger("syslog", ident, LOG_PID | LOG_PERROR);
         syslog_logger->warn("This is warning that will end up in syslog. This is Linux only!");
 #endif
     }
