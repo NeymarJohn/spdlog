@@ -48,7 +48,7 @@ Time needed to log 1,000,000 lines under synchronous mode (in seconds, the best 
 #### Asynchronous mode 
 Time needed to log 1,000,000 lines under asynchronous mode, i.e. the time it takes to put them in the async queue (in seconds, the best of 3 runs):
 
-|threads|g2log   |spdlog<sup>async mode</sup>|
+|threads|g2log<sup>async logger</sup>   |spdlog<sup>async mode</sup>|
 |:-------|:-----:|-------------------------:|
 |1|       1.850s |0.216s |
 |10|      0.943s  |0.173s|
@@ -67,7 +67,7 @@ int main(int, char* [])
     namespace spd = spdlog;
     try
     {
-        // Set log level to all loggers to DEBUG and above
+        // Set log level to all loggers to debug and above
         spd::set_level(spd::level::debug);
 
         //Create console, multithreaded logger
