@@ -5,16 +5,18 @@ Very fast, header only, C++ logging library.
 ## Install
 Just copy the files to your build tree and use a C++11 compiler
 
-## Platforms
- * Linux (gcc 4.8.1+, clang 3.5+)
- * Windows (visual studio 2013+, mingw with g++ 4.9.1+)
- * Mac OSX (clang 3.5+)
- 
+## Tested on:
+* gcc 4.8.1 and above
+* clang 3.5 (Linux and OSX)
+* visual studio 2013
+* mingw with g++ 4.9.x
+
 ##Features
 * Very fast - performance is the primary goal (see [benchmarks](#benchmarks) below).
 * Headers only.
 * No dependencies - just copy and use.
-* Feature rich [call style](#usage-example) using the excellent [cppformat](http://cppformat.github.io/) library.
+* Cross platform - Linux / Windows on 32/64 bits.
+* **new!** Feature rich [call style](#usage-example) using the excellent [cppformat](http://cppformat.github.io/) library.
 * ostream call style is supported too.
 * Extremely fast asynchronous mode (optional) - using lockfree queues and other tricks to reach millions of calls/sec.
 * [Custom](https://github.com/gabime/spdlog/wiki/Custom-formatting) formatting.
@@ -153,6 +155,5 @@ void custom_class_example()
 }
 ```
 
-## Documentation
-Documentation can be found in the [wiki](https://github.com/gabime/spdlog/wiki/1.-QuickStart) pages.
-
+## Tweaking
+spdlog can be [tweaked](include/spdlog/tweakme.h) to improve performance even more.
