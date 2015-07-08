@@ -1,20 +1,19 @@
 CXX	?= g++
-CXXFLAGS	=  -Wall  -pedantic -std=c++11 -pthread -O2
-LDPFALGS = -pthread
+CXXFLAGS	=  -Wall  -pedantic -std=c++11 -pthread -Wl,--no-as-needed -O2
+LDPFALGS = -pthread -flto
 
 CPP_FILES := $(wildcard *.cpp)
 OBJ_FILES := $(addprefix ./,$(notdir $(CPP_FILES:.cpp=.o)))
 
-    
-tests: $(OBJ_FILES)    
+
+tests: $(OBJ_FILES)
 	$(CXX) $(CXXFLAGS) $(LDPFALGS) -o $@ $^
-	mkdir -p logs
 
 %.o: %.cpp
-	$(CXX) $(CXXFLAGS) -c -o $@ $<
+	g++ $(CXXFLAGS) -c -o $@ $<
 
 clean:
-	rm -f tests *.o logs/*.txt     
+	rm -f tests *.o logs/*     
  
 rebuild: clean tests
 
