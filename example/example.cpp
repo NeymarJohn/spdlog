@@ -25,7 +25,6 @@
 //
 // spdlog usage example
 //
-#include <cstdlib> // EXIT_FAILURE
 #include <iostream>
 #include "spdlog/spdlog.h"
 
@@ -107,9 +106,7 @@ int main(int, char*[])
     catch (const spd::spdlog_ex& ex)
     {
         std::cout << "Log failed: " << ex.what() << std::endl;
-        return EXIT_FAILURE;
     }
-    return EXIT_SUCCESS;
 }
 
 
