@@ -5,12 +5,9 @@
 //
 // spdlog usage example
 //
-#include "spdlog/spdlog.h"
-#include "spdlog/sinks/ansicolor_sink.h"
-
 #include <cstdlib> // EXIT_FAILURE
 #include <iostream>
-#include <memory>
+#include "spdlog/spdlog.h"
 
 int main(int, char*[])
 {
@@ -87,27 +84,6 @@ int main(int, char*[])
         auto syslog_logger = spd::syslog_logger("syslog", ident, LOG_PID);
         syslog_logger->warn("This is warning that will end up in syslog. This is Linux only!");
 #endif
-
-        //
-        // ANSI color logging (OS X and Linux. Windows only if ansi.sys is loaded.)
-        //
-
-        // Create a sink to add colors to.
-        auto console_out = spdlog::sinks::stderr_sink_st::instance();
-        auto color_sink = std::make_shared<spd::sinks::ansicolor_sink>(console_out);  // wraps around another sink
-        auto color_logger = spd::details::registry::instance().create("Color", color_sink);
-        color_logger->set_level(spd::level::trace);
-        color_sink->setColor(spd::level::info, color_sink->bold + color_sink->green);
-        color_logger->info("Testing color logger...");
-        color_logger->trace("Trace");
-        color_logger->debug("Debug");
-        color_logger->info("Info");
-        color_logger->notice("Notice");
-        color_logger->warn("Warning");
-        color_logger->error("Error");
-        color_logger->critical("Critical");
-        color_logger->alert("Alert");
-        color_logger->emerg("Emergency");
 
         //
         //Release and close all loggers
