@@ -19,15 +19,12 @@
 
 #include <spdlog/details/null_mutex.h>
 
-
-//visual studio upto 2013 does not support noexcept
-#if defined(_MSC_VER) && (_MSC_VER < 1900)
-#define SPDLOG_NOEXCEPT throw()
-#else
+//visual studio does not support noexcept yet
+#ifndef _MSC_VER
 #define SPDLOG_NOEXCEPT noexcept
+#else
+#define SPDLOG_NOEXCEPT throw()
 #endif
-
-
 
 namespace spdlog
 {

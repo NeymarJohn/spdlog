@@ -315,7 +315,6 @@ inline bool spdlog::details::async_log_helper::process_next_msg(log_clock::time_
     }
 }
 
-// flush all sinks if _flush_interval_ms has expired
 inline void spdlog::details::async_log_helper::handle_flush_interval(log_clock::time_point& now, log_clock::time_point& last_flush)
 {
     auto should_flush = _flush_requested || (_flush_interval_ms != std::chrono::milliseconds::zero() && now - last_flush >= _flush_interval_ms);
@@ -327,37 +326,34 @@ inline void spdlog::details::async_log_helper::handle_flush_interval(log_clock::
         _flush_requested = false;
     }
 }
-
 inline void spdlog::details::async_log_helper::set_formatter(formatter_ptr msg_formatter)
 {
     _formatter = msg_formatter;
 }
 
 
-// spin, yield or sleep. use the time passed since last message as a hint
+// sleep,yield or return immediatly using the time passed since last message as a hint
 inline void spdlog::details::async_log_helper::sleep_or_yield(const spdlog::log_clock::time_point& now, const spdlog::log_clock::time_point& last_op_time)
 {
-    using namespace std::this_thread;
     using std::chrono::milliseconds;
-    using std::chrono::microseconds;
-       
+    using namespace std::this_thread;
+
     auto time_since_op = now - last_op_time;
-    
-    // spin upto 50 micros
-    if (time_since_op <= microseconds(50))
+
+    // spin upto 1 ms
+    if (time_since_op <= milliseconds(1))
         return;
-        
-    // yield upto 150 micros
-    if (time_since_op <= microseconds(100))
+
+    // yield upto 10ms
+    if (time_since_op <= milliseconds(10))
         return yield();
 
 
-    // sleep for 20 ms upto 200 ms
-    if (time_since_op <= milliseconds(200))
-        return sleep_for(milliseconds(20));
+    // sleep for half of duration since last op
+    if (time_since_op <= milliseconds(100))
+        return sleep_for(time_since_op / 2);
 
-    // sleep for 200 ms 
-    return sleep_for(milliseconds(200));
+    return sleep_for(milliseconds(100));
 }
 
 // throw if the worker thread threw an exception or not active
