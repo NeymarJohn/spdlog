@@ -32,13 +32,16 @@ else()
   find_package(spdlog CONFIG REQUIRED)
 endif()
 
-find_package(Threads)
+if (CMAKE_COMPILER_IS_GNUCXX)
+  set ( CMAKE_CXX_FLAGS "--std=c++11 -pthread")  
+  set ( CMAKE_EXE_LIKKER_FLAGS "-pthread")  
+endif ()
 
 add_executable(example example.cpp)
-target_link_libraries(example spdlog::spdlog ${CMAKE_THREAD_LIBS_INIT})
+target_link_libraries(example spdlog::spdlog)
 
 add_executable(benchmark bench.cpp)
-target_link_libraries(benchmark spdlog::spdlog ${CMAKE_THREAD_LIBS_INIT})
+target_link_libraries(benchmark spdlog::spdlog)
 
 enable_testing()
 file(MAKE_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/logs")
