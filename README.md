@@ -15,7 +15,6 @@ Just copy the source [folder](https://github.com/gabime/spdlog/tree/master/inclu
 * Headers only.
 * No dependencies - just copy and use.
 * Feature rich [call style](#usage-example) using the excellent [fmt](https://github.com/fmtlib/fmt) library.
-* ostream call style is supported too.
 * Extremely fast asynchronous mode (optional) - using lockfree queues and other tricks to reach millions of calls/sec.
 * [Custom](https://github.com/gabime/spdlog/wiki/3.-Custom-formatting) formatting.
 * Multi/Single threaded loggers.
@@ -89,9 +88,9 @@ int main(int, char* [])
         console->debug("Now it should..");
         
         //
-        // Create a basic multithreaded file logger (use "file_logger_st" for the single threaded version)
+        // Create a basic multithreaded file logger (or "basic_logger_st" for single threaded logger)
         //
-        auto my_logger = spd::file_logger_mt("basic_logger", "logs/basic.txt");
+        auto my_logger = spd::basic_logger_mt("basic_logger", "logs/basic.txt");
         my_logger->info("Some log message");
 
         //
