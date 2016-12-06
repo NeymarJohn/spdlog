@@ -10,6 +10,7 @@
 #include <ctime>
 #include <functional>
 #include <string>
+#include <chrono>
 #include <stdio.h>
 #include <string.h>
 #include <sys/stat.h>
@@ -38,18 +39,15 @@
 
 #include <sys/syscall.h> //Use gettid() syscall under linux to get thread id
 #include <unistd.h>
-#include <chrono>
 
 #elif __FreeBSD__
 #include <sys/thr.h> //Use thr_self() syscall under FreeBSD to get thread id
+#include <unistd.h>
 
 #else
+#include <unistd.h> 
 #include <thread>
 
-#endif
-
-#ifndef __has_feature       // Clang - feature checking macros.
-#define __has_feature(x) 0  // Compatibility with non-clang compilers.
 #endif
 
 namespace spdlog
@@ -319,7 +317,7 @@ inline size_t _thread_id()
 //Return current thread id as size_t (from thread local storage)
 inline size_t thread_id()
 {
-#if defined(_MSC_VER) && (_MSC_VER < 1900) || defined(__clang__) && !__has_feature(cxx_thread_local)
+#if defined(_MSC_VER) && (_MSC_VER < 1900) || defined(__clang_major__) && (__clang_major__ < 8)
     return _thread_id();
 #else
     static thread_local const size_t tid = _thread_id();
