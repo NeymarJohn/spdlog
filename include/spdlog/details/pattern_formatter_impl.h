@@ -18,7 +18,6 @@
 #include <thread>
 #include <utility>
 #include <vector>
-#include <array>
 
 namespace spdlog
 {
@@ -79,54 +78,42 @@ static int to12h(const tm& t)
 }
 
 //Abbreviated weekday name
-static const auto& days() {
-    static const std::array<std::string, 7> arr{ "Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat" };
-    return arr;
-}
+static const std::string days[] { "Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat" };
 class a_formatter:public flag_formatter
 {
     void format(details::log_msg& msg, const std::tm& tm_time) override
     {
-        msg.formatted << days()[tm_time.tm_wday];
+        msg.formatted << days[tm_time.tm_wday];
     }
 };
 
 //Full weekday name
-static const auto& full_days() {
-    static const std::array<std::string, 7> arr{ "Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday" };
-    return arr;
-}
+static const std::string full_days[] { "Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday" };
 class A_formatter:public flag_formatter
 {
     void format(details::log_msg& msg, const std::tm& tm_time) override
     {
-        msg.formatted << full_days()[tm_time.tm_wday];
+        msg.formatted << full_days[tm_time.tm_wday];
     }
 };
 
 //Abbreviated month
-static const auto& months() {
-    static const std::array<std::string, 12> arr{ "Jan", "Feb", "Mar", "Apr", "May", "June", "July", "Aug", "Sept", "Oct", "Nov", "Dec" };
-    return arr;
-}
+static const std::string  months[] { "Jan", "Feb", "Mar", "Apr", "May", "June", "July", "Aug", "Sept", "Oct", "Nov", "Dec" };
 class b_formatter:public flag_formatter
 {
     void format(details::log_msg& msg, const std::tm& tm_time) override
     {
-        msg.formatted << months()[tm_time.tm_mon];
+        msg.formatted << months[tm_time.tm_mon];
     }
 };
 
 //Full month name
-static const auto& full_months() {
-    static const std::array<std::string, 12> arr{ "January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December" };
-    return arr;
-}
+static const std::string full_months[] { "January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December" };
 class B_formatter:public flag_formatter
 {
     void format(details::log_msg& msg, const std::tm& tm_time) override
     {
-        msg.formatted << full_months()[tm_time.tm_mon];
+        msg.formatted << full_months[tm_time.tm_mon];
     }
 };
 
@@ -151,7 +138,7 @@ class c_formatter:public flag_formatter
 {
     void format(details::log_msg& msg, const std::tm& tm_time) override
     {
-        msg.formatted << days()[tm_time.tm_wday] << ' ' << months()[tm_time.tm_mon] << ' ' << tm_time.tm_mday << ' ';
+        msg.formatted << days[tm_time.tm_wday] << ' ' << months[tm_time.tm_mon] << ' ' << tm_time.tm_mday << ' ';
         pad_n_join(msg.formatted, tm_time.tm_hour, tm_time.tm_min, tm_time.tm_sec, ':') << ' ' << tm_time.tm_year + 1900;
     }
 };
