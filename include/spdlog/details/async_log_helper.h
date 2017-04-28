@@ -9,8 +9,6 @@
 // If the internal queue of log messages reaches its max size,
 // then the client call will block until there is more room.
 //
-// If the back thread throws during logging, a spdlog::spdlog_ex exception
-// will be thrown in client's thread when tries to log the next message
 
 #pragma once
 
@@ -177,7 +175,7 @@ private:
 
     void handle_flush_interval(log_clock::time_point& now, log_clock::time_point& last_flush);
 
-    // sleep,yield or return immediatly using the time passed since last message as a hint
+    // sleep,yield or return immediately using the time passed since last message as a hint
     static void sleep_or_yield(const spdlog::log_clock::time_point& now, const log_clock::time_point& last_op_time);
 
     // wait until the queue is empty
