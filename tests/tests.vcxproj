@@ -132,7 +132,6 @@
     <ClCompile Include="format.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="registry.cpp" />
-    <ClCompile Include="test_macros.cpp" />
     <ClCompile Include="utils.cpp" />
   </ItemGroup>
   <ItemGroup>

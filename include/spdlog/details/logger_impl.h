@@ -11,7 +11,6 @@
 #include <memory>
 #include <string>
 
-
 // create logger with given name, sinks and the default pattern formatter
 // all other ctors will call this one
 template<class It>
@@ -78,7 +77,7 @@ inline void spdlog::logger::log(level::level_enum lvl, const char* fmt, const Ar
     {
         _err_handler(ex.what());
     }
-    catch (...)
+    SPDLOG_CATCH_ALL
     {
         _err_handler("Unknown exception");
     }
@@ -98,7 +97,7 @@ inline void spdlog::logger::log(level::level_enum lvl, const char* msg)
     {
         _err_handler(ex.what());
     }
-    catch (...)
+    SPDLOG_CATCH_ALL
     {
         _err_handler("Unknown exception");
     }
@@ -119,7 +118,7 @@ inline void spdlog::logger::log(level::level_enum lvl, const T& msg)
     {
         _err_handler(ex.what());
     }
-    catch (...)
+    SPDLOG_CATCH_ALL
     {
         _err_handler("Unknown exception");
     }
@@ -512,7 +511,7 @@ inline bool spdlog::logger::should_log(spdlog::level::level_enum msg_level) cons
 inline void spdlog::logger::_sink_it(details::log_msg& msg)
 {
 #if defined(SPDLOG_ENABLE_MESSAGE_COUNTER)
-    _incr_msg_counter(msg);
+    msg.msg_id = _msg_counter.fetch_add(1, std::memory_order_relaxed);
 #endif
     _formatter->format(msg);
     for (auto &sink : _sinks)
@@ -562,12 +561,9 @@ inline bool spdlog::logger::_should_flush_on(const details::log_msg &msg)
     return (msg.level >= flush_level) && (msg.level != level::off);
 }
 
-inline void spdlog::logger::_incr_msg_counter(details::log_msg &msg)
-{
-    msg.msg_id = _msg_counter.fetch_add(1, std::memory_order_relaxed);
-}
-
 inline const std::vector<spdlog::sink_ptr>& spdlog::logger::sinks() const
 {
     return _sinks;
 }
+
+#undef SPDLOG_CATCH_ALL
