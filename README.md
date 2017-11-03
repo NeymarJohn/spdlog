@@ -15,7 +15,7 @@ Very fast, header only, C++ logging library. [![Build Status](https://travis-ci.
 * FreeBSD:  `cd /usr/ports/devel/spdlog/ && make install clean`
 * Fedora: `yum install spdlog`
 * Gentoo: `emerge dev-libs/spdlog`
-* Arch Linux: `pacman -S spdlog-git`
+* Arch Linux: `yaourt -S spdlog-git`
 * vcpkg: `vcpkg install spdlog`
  
 
@@ -29,6 +29,7 @@ Very fast, header only, C++ logging library. [![Build Status](https://travis-ci.
 * Very fast - performance is the primary goal (see [benchmarks](#benchmarks) below).
 * Headers only, just copy and use.
 * Feature rich [call style](#usage-example) using the excellent [fmt](https://github.com/fmtlib/fmt) library.
+* Optional printf syntax support.
 * Extremely fast asynchronous mode (optional) - using lockfree queues and other tricks to reach millions of calls/sec.
 * [Custom](https://github.com/gabime/spdlog/wiki/3.-Custom-formatting) formatting.
 * Conditional Logging
@@ -129,9 +130,9 @@ int main(int, char*[])
 
         // Runtime log levels
 	spd::set_level(spd::level::info); //Set global log level to info
-	console->debug("This message shold not be displayed!");
+	console->debug("This message should not be displayed!");
 	console->set_level(spd::level::debug); // Set specific logger's log level
-	console->debug("This message shold be displayed..");
+	console->debug("This message should be displayed..");
 
         // Compile time log levels
         // define SPDLOG_DEBUG_ON or SPDLOG_TRACE_ON

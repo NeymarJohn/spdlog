@@ -99,7 +99,7 @@ class A_formatter:public flag_formatter
 };
 
 //Abbreviated month
-static const std::string  months[] { "Jan", "Feb", "Mar", "Apr", "May", "June", "July", "Aug", "Sept", "Oct", "Nov", "Dec" };
+static const std::string  months[] { "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sept", "Oct", "Nov", "Dec" };
 class b_formatter:public flag_formatter
 {
     void format(details::log_msg& msg, const std::tm& tm_time) override
@@ -119,14 +119,14 @@ class B_formatter:public flag_formatter
 };
 
 
-//write 2 ints seperated by sep with padding of 2
+//write 2 ints separated by sep with padding of 2
 static fmt::MemoryWriter& pad_n_join(fmt::MemoryWriter& w, int v1, int v2, char sep)
 {
     w << fmt::pad(v1, 2, '0') << sep << fmt::pad(v2, 2, '0');
     return w;
 }
 
-//write 3 ints seperated by sep with padding of 2
+//write 3 ints separated by sep with padding of 2
 static fmt::MemoryWriter& pad_n_join(fmt::MemoryWriter& w, int v1, int v2, int v3, char sep)
 {
     w << fmt::pad(v1, 2, '0') << sep << fmt::pad(v2, 2, '0') << sep << fmt::pad(v3, 2, '0');
@@ -384,6 +384,14 @@ class pid_formatter SPDLOG_FINAL:public flag_formatter
     }
 };
 
+// message counter formatter
+class i_formatter SPDLOG_FINAL :public flag_formatter
+{
+    void format(details::log_msg& msg, const std::tm&) override
+    {
+        msg.formatted << fmt::pad(msg.msg_id, 6, '0');
+    }
+};
 
 class v_formatter SPDLOG_FINAL:public flag_formatter
 {
@@ -641,11 +649,10 @@ inline void spdlog::pattern_formatter::handle_flag(char flag)
         _formatters.push_back(std::unique_ptr<details::flag_formatter>(new details::pid_formatter()));
         break;
 
-#if defined(SPDLOG_ENABLE_MESSAGE_COUNTER)
+
     case ('i'):
         _formatters.push_back(std::unique_ptr<details::flag_formatter>(new details::i_formatter()));
         break;
-#endif
 
     default: //Unknown flag appears as is
         _formatters.push_back(std::unique_ptr<details::flag_formatter>(new details::ch_formatter('%')));

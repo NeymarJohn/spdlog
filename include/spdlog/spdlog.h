@@ -154,7 +154,7 @@ void drop_all();
 ///////////////////////////////////////////////////////////////////////////////
 //
 // Trace & Debug can be switched on/off at compile time for zero cost debug statements.
-// Uncomment SPDLOG_DEBUG_ON/SPDLOG_TRACE_ON in teakme.h to enable.
+// Uncomment SPDLOG_DEBUG_ON/SPDLOG_TRACE_ON in tweakme.h to enable.
 // SPDLOG_TRACE(..) will also print current file and line.
 //
 // Example:
@@ -170,10 +170,10 @@ void drop_all();
 #define SPDLOG_STR_HELPER(x) SPDLOG_STR_H(x)
 #ifdef _MSC_VER
   #define SPDLOG_TRACE(logger, ...) logger->trace("[ " __FILE__ "(" SPDLOG_STR_HELPER(__LINE__) ") ] " __VA_ARGS__)
-  #define SPDLOG_TRACE_IF(logger, flag, ...) logger.trace_if(flag, "[ " __FILE__ "(" SPDLOG_STR_HELPER(__LINE__) ") ] " __VA_ARGS__)
+  #define SPDLOG_TRACE_IF(logger, flag, ...) logger->trace_if(flag, "[ " __FILE__ "(" SPDLOG_STR_HELPER(__LINE__) ") ] " __VA_ARGS__)
 #else
   #define SPDLOG_TRACE(logger, ...) logger->trace("[ " __FILE__ ":" SPDLOG_STR_HELPER(__LINE__) " ] " __VA_ARGS__)
-  #define SPDLOG_TRACE_IF(logger, flag, ...) logger.trace_if(flag, "[ " __FILE__ ":" SPDLOG_STR_HELPER(__LINE__) " ] " __VA_ARGS__)
+  #define SPDLOG_TRACE_IF(logger, flag, ...) logger->trace_if(flag, "[ " __FILE__ ":" SPDLOG_STR_HELPER(__LINE__) " ] " __VA_ARGS__)
 #endif
 #else
 #define SPDLOG_TRACE(logger, ...)
