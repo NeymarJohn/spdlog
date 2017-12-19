@@ -106,7 +106,7 @@ std::shared_ptr<logger> stderr_color_st(const std::string& logger_name);
 // Create and register a syslog logger
 //
 #ifdef SPDLOG_ENABLE_SYSLOG
-std::shared_ptr<logger> syslog_logger(const std::string& logger_name, const std::string& ident = "", int syslog_option = 0);
+std::shared_ptr<logger> syslog_logger(const std::string& logger_name, const std::string& ident = "", int syslog_option = 0, int syslog_facilty = (1<<3));
 #endif
 
 #if defined(__ANDROID__)
@@ -165,15 +165,13 @@ void drop_all();
 ///////////////////////////////////////////////////////////////////////////////
 
 #ifdef SPDLOG_TRACE_ON
-#define SPDLOG_STR_H(x) #x
-#define SPDLOG_STR_HELPER(x) SPDLOG_STR_H(x)
 #ifdef _MSC_VER
-#define SPDLOG_TRACE(logger, ...) logger->trace("[ " __FILE__ "(" SPDLOG_STR_HELPER(__LINE__) ") ] " __VA_ARGS__)
+#define SPDLOG_TRACE(logger, s, ...) logger->trace(fmt::format("[ {}({}) ] {}", __FILE__, __LINE__, (s)).c_str(), ##__VA_ARGS__);
 #else
-#define SPDLOG_TRACE(logger, ...) logger->trace("[ " __FILE__ ":" SPDLOG_STR_HELPER(__LINE__) " ] " __VA_ARGS__)
+#define SPDLOG_TRACE(logger, s, ...) logger->trace(fmt::format("[ {}:{} ] {}", __FILE__, __LINE__, (s)).c_str(), ##__VA_ARGS__);
 #endif
 #else
-#define SPDLOG_TRACE(logger, ...)
+#define SPDLOG_TRACE(logger, s, ...)
 #endif
 
 #ifdef SPDLOG_DEBUG_ON
