@@ -36,9 +36,14 @@ void set_pattern(const std::string& format_string);
 void set_formatter(formatter_ptr f);
 
 //
-// Set global logging level for
+// Set global logging level
 //
 void set_level(level::level_enum log_level);
+
+//
+// Set global flush level
+//
+void flush_on(level::level_enum log_level);
 
 //
 // Set global error handler
@@ -165,23 +170,24 @@ void drop_all();
 ///////////////////////////////////////////////////////////////////////////////
 
 #ifdef SPDLOG_TRACE_ON
-#  define SPDLOG_STR_H(x) #x
-#  define SPDLOG_STR_HELPER(x) SPDLOG_STR_H(x)
-#  ifdef _MSC_VER
-#    define SPDLOG_TRACE(logger, ...) logger->trace("[ " __FILE__ "(" SPDLOG_STR_HELPER(__LINE__) ") ] " __VA_ARGS__)
-#  else
-#    define SPDLOG_TRACE(logger, ...) logger->trace("[ " __FILE__ ":" SPDLOG_STR_HELPER(__LINE__) " ] " __VA_ARGS__)
-#  endif
+#define SPDLOG_STR_H(x) #x
+#define SPDLOG_STR_HELPER(x) SPDLOG_STR_H(x)
+#ifdef _MSC_VER
+#define SPDLOG_TRACE(logger, ...) logger->trace("[ " __FILE__ "(" SPDLOG_STR_HELPER(__LINE__) ") ] " __VA_ARGS__)
 #else
-#  define SPDLOG_TRACE(logger, ...) (void)0
+#define SPDLOG_TRACE(logger, ...) logger->trace("[ " __FILE__ ":" SPDLOG_STR_HELPER(__LINE__) " ] " __VA_ARGS__)
+#endif
+#else
+#define SPDLOG_TRACE(logger, ...)
 #endif
 
 #ifdef SPDLOG_DEBUG_ON
-#  define SPDLOG_DEBUG(logger, ...) logger->debug(__VA_ARGS__)
+#define SPDLOG_DEBUG(logger, ...) logger->debug(__VA_ARGS__)
 #else
-#  define SPDLOG_DEBUG(logger, ...) (void)0
+#define SPDLOG_DEBUG(logger, ...)
 #endif
 
 }
+
 
 #include "details/spdlog_impl.h"
