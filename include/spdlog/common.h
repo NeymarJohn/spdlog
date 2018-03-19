@@ -143,11 +143,9 @@ enum class pattern_time_type
 //
 // Log exception
 //
-namespace details {
-namespace os {
+namespace details { namespace os {
 std::string errno_str(int err_num);
-}
-} // namespace details
+}} // namespace details::os
 class spdlog_ex : public std::exception
 {
 public:

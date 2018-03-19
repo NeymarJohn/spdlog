@@ -20,11 +20,9 @@ namespace internal {
 
 // Checks if a value fits in int - used to avoid warnings about comparing
 // signed and unsigned integers.
-template<bool IsSigned>
-struct IntChecker
+template <bool IsSigned> struct IntChecker
 {
-    template<typename T>
-    static bool fits_in_int(T value)
+    template <typename T> static bool fits_in_int(T value)
     {
         unsigned max = std::numeric_limits<int>::max();
         return value <= max;
@@ -35,11 +33,9 @@ struct IntChecker
     }
 };
 
-template<>
-struct IntChecker<true>
+template <> struct IntChecker<true>
 {
-    template<typename T>
-    static bool fits_in_int(T value)
+    template <typename T> static bool fits_in_int(T value)
     {
         return value >= std::numeric_limits<int>::min() && value <= std::numeric_limits<int>::max();
     }
@@ -57,8 +53,7 @@ public:
         FMT_THROW(FormatError("precision is not integer"));
     }
 
-    template<typename T>
-    int visit_any_int(T value)
+    template <typename T> int visit_any_int(T value)
     {
         if (!IntChecker<std::numeric_limits<T>::is_signed>::fits_in_int(value))
             FMT_THROW(FormatError("number is too big"));
@@ -70,8 +65,7 @@ public:
 class IsZeroInt : public ArgVisitor<IsZeroInt, bool>
 {
 public:
-    template<typename T>
-    bool visit_any_int(T value)
+    template <typename T> bool visit_any_int(T value)
     {
         return value == 0;
     }
@@ -96,14 +90,12 @@ public:
         return 'p';
     }
 
-    template<typename T>
-    char visit_any_int(T)
+    template <typename T> char visit_any_int(T)
     {
         return 'd';
     }
 
-    template<typename T>
-    char visit_any_double(T)
+    template <typename T> char visit_any_double(T)
     {
         return 'g';
     }
@@ -114,8 +106,7 @@ public:
     }
 };
 
-template<typename T, typename U>
-struct is_same
+template <typename T, typename U> struct is_same
 {
     enum
     {
@@ -123,8 +114,7 @@ struct is_same
     };
 };
 
-template<typename T>
-struct is_same<T, T>
+template <typename T> struct is_same<T, T>
 {
     enum
     {
@@ -136,8 +126,7 @@ struct is_same<T, T>
 // if T is an integral type. If T is void, the argument is converted to
 // corresponding signed or unsigned type depending on the type specifier:
 // 'd' and 'i' - signed, other - unsigned)
-template<typename T = void>
-class ArgConverter : public ArgVisitor<ArgConverter<T>, void>
+template <typename T = void> class ArgConverter : public ArgVisitor<ArgConverter<T>, void>
 {
 private:
     internal::Arg &arg_;
@@ -164,8 +153,7 @@ public:
             visit_any_int(value);
     }
 
-    template<typename U>
-    void visit_any_int(U value)
+    template <typename U> void visit_any_int(U value)
     {
         bool is_signed = type_ == 'd' || type_ == 'i';
         if (type_ == 's')
@@ -223,8 +211,7 @@ public:
     {
     }
 
-    template<typename T>
-    void visit_any_int(T value)
+    template <typename T> void visit_any_int(T value)
     {
         arg_.type = internal::Arg::CHAR;
         arg_.int_value = static_cast<char>(value);
@@ -251,8 +238,7 @@ public:
         FMT_THROW(FormatError("width is not integer"));
     }
 
-    template<typename T>
-    unsigned visit_any_int(T value)
+    template <typename T> unsigned visit_any_int(T value)
     {
         typedef typename internal::IntTraits<T>::MainType UnsignedType;
         UnsignedType width = static_cast<UnsignedType>(value);
@@ -286,8 +272,7 @@ public:
   superclass will be called.
   \endrst
  */
-template<typename Impl, typename Char, typename Spec>
-class BasicPrintfArgFormatter : public internal::ArgFormatterBase<Impl, Char, Spec>
+template <typename Impl, typename Char, typename Spec> class BasicPrintfArgFormatter : public internal::ArgFormatterBase<Impl, Char, Spec>
 {
 private:
     void write_null_pointer()
@@ -382,8 +367,7 @@ public:
 };
 
 /** The default printf argument formatter. */
-template<typename Char>
-class PrintfArgFormatter : public BasicPrintfArgFormatter<PrintfArgFormatter<Char>, Char, FormatSpec>
+template <typename Char> class PrintfArgFormatter : public BasicPrintfArgFormatter<PrintfArgFormatter<Char>, Char, FormatSpec>
 {
 public:
     /** Constructs an argument formatter object. */
@@ -394,8 +378,7 @@ public:
 };
 
 /** This template formats data and writes the output to a writer. */
-template<typename Char, typename ArgFormatter = PrintfArgFormatter<Char>>
-class PrintfFormatter : private internal::FormatterBase
+template <typename Char, typename ArgFormatter = PrintfArgFormatter<Char>> class PrintfFormatter : private internal::FormatterBase
 {
 private:
     BasicWriter<Char> &writer_;
@@ -427,8 +410,7 @@ public:
     void format(BasicCStringRef<Char> format_str);
 };
 
-template<typename Char, typename AF>
-void PrintfFormatter<Char, AF>::parse_flags(FormatSpec &spec, const Char *&s)
+template <typename Char, typename AF> void PrintfFormatter<Char, AF>::parse_flags(FormatSpec &spec, const Char *&s)
 {
     for (;;)
     {
@@ -456,8 +438,7 @@ void PrintfFormatter<Char, AF>::parse_flags(FormatSpec &spec, const Char *&s)
     }
 }
 
-template<typename Char, typename AF>
-internal::Arg PrintfFormatter<Char, AF>::get_arg(const Char *s, unsigned arg_index)
+template <typename Char, typename AF> internal::Arg PrintfFormatter<Char, AF>::get_arg(const Char *s, unsigned arg_index)
 {
     (void)s;
     const char *error = FMT_NULL;
@@ -467,8 +448,7 @@ internal::Arg PrintfFormatter<Char, AF>::get_arg(const Char *s, unsigned arg_ind
     return arg;
 }
 
-template<typename Char, typename AF>
-unsigned PrintfFormatter<Char, AF>::parse_header(const Char *&s, FormatSpec &spec)
+template <typename Char, typename AF> unsigned PrintfFormatter<Char, AF>::parse_header(const Char *&s, FormatSpec &spec)
 {
     unsigned arg_index = std::numeric_limits<unsigned>::max();
     Char c = *s;
@@ -509,8 +489,7 @@ unsigned PrintfFormatter<Char, AF>::parse_header(const Char *&s, FormatSpec &spe
     return arg_index;
 }
 
-template<typename Char, typename AF>
-void PrintfFormatter<Char, AF>::format(BasicCStringRef<Char> format_str)
+template <typename Char, typename AF> void PrintfFormatter<Char, AF>::format(BasicCStringRef<Char> format_str)
 {
     const Char *start = format_str.c_str();
     const Char *s = start;

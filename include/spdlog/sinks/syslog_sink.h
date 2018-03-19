@@ -16,8 +16,7 @@
 #include <string>
 #include <syslog.h>
 
-namespace spdlog {
-namespace sinks {
+namespace spdlog { namespace sinks {
 /**
  * Sink that write to syslog using the `syscall()` library call.
  *
@@ -70,7 +69,6 @@ private:
         return _priorities[static_cast<size_t>(msg.level)];
     }
 };
-} // namespace sinks
-} // namespace spdlog
+}} // namespace spdlog::sinks
 
 #endif

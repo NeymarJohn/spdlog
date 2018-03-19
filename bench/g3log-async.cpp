@@ -9,8 +9,8 @@
 #include <thread>
 #include <vector>
 
-#include "g2log.h"
-#include "g2logworker.h"
+#include "g3log/g3log.hpp"
+#include "g3log/logworker.hpp"
 
 using namespace std;
 template <typename T> std::string format(const T &value);
@@ -23,10 +23,12 @@ int main(int argc, char *argv[])
 
     if (argc > 1)
         thread_count = atoi(argv[1]);
+
     int howmany = 1000000;
 
-    g2LogWorker g2log(argv[0], "logs");
-    g2::initializeLogging(&g2log);
+    auto worker = g3::LogWorker::createLogWorker();
+    auto handle= worker->addDefaultLogger(argv[0], "logs");
+    g3::initializeLogging(worker.get());
 
     std::atomic<int> msg_counter{0};
     vector<thread> threads;
@@ -39,7 +41,7 @@ int main(int argc, char *argv[])
                 int counter = ++msg_counter;
                 if (counter > howmany)
                     break;
-                LOG(INFO) << "g2log message #" << counter << ": This is some text for your pleasure";
+                LOG(INFO) << "g3log message #" << counter << ": This is some text for your pleasure";
             }
         }));
     }
@@ -47,7 +49,7 @@ int main(int argc, char *argv[])
     for (auto &t : threads)
     {
         t.join();
-    };
+    }
 
     duration<float> delta = clock::now() - start;
     float deltaf = delta.count();

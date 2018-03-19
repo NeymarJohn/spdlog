@@ -20,8 +20,7 @@
 #include <utility>
 #include <vector>
 
-namespace spdlog {
-namespace details {
+namespace spdlog { namespace details {
 class flag_formatter
 {
 public:
@@ -467,8 +466,7 @@ class full_formatter SPDLOG_FINAL : public flag_formatter
     }
 };
 
-} // namespace details
-} // namespace spdlog
+}} // namespace spdlog::details
 ///////////////////////////////////////////////////////////////////////////////
 // pattern_formatter inline impl
 ///////////////////////////////////////////////////////////////////////////////
@@ -488,24 +486,16 @@ inline void spdlog::pattern_formatter::compile_pattern(const std::string &patter
         if (*it == '%')
         {
             if (user_chars) // append user chars found so far
-            {
                 _formatters.push_back(std::move(user_chars));
-            }
             if (++it != end)
-            {
                 handle_flag(*it);
-            }
             else
-            {
                 break;
-            }
         }
         else // chars not following the % sign should be displayed as is
         {
             if (!user_chars)
-            {
                 user_chars = std::unique_ptr<details::aggregate_formatter>(new details::aggregate_formatter());
-            }
             user_chars->add_ch(*it);
         }
     }
