@@ -48,9 +48,11 @@ Distributed under the MIT License (http://opensource.org/licenses/MIT)
 #include <atomic>
 #include <utility>
 
-namespace spdlog { namespace details {
+namespace spdlog {
+namespace details {
 
-template <typename T> class mpmc_bounded_queue
+template<typename T>
+class mpmc_bounded_queue
 {
 public:
     using item_type = T;
@@ -62,10 +64,14 @@ public:
     {
         // queue size must be power of two
         if (!((buffer_size >= 2) && ((buffer_size & (buffer_size - 1)) == 0)))
+        {
             throw spdlog_ex("async logger queue size must be power of two");
+        }
 
         for (size_t i = 0; i != buffer_size; i += 1)
+        {
             buffer_[i].sequence_.store(i, std::memory_order_relaxed);
+        }
         enqueue_pos_.store(0, std::memory_order_relaxed);
         dequeue_pos_.store(0, std::memory_order_relaxed);
     }
@@ -90,7 +96,9 @@ public:
             if (dif == 0)
             {
                 if (enqueue_pos_.compare_exchange_weak(pos, pos + 1, std::memory_order_relaxed))
+                {
                     break;
+                }
             }
             else if (dif < 0)
             {
@@ -118,12 +126,18 @@ public:
             if (dif == 0)
             {
                 if (dequeue_pos_.compare_exchange_weak(pos, pos + 1, std::memory_order_relaxed))
+                {
                     break;
+                }
             }
             else if (dif < 0)
+            {
                 return false;
+            }
             else
+            {
                 pos = dequeue_pos_.load(std::memory_order_relaxed);
+            }
         }
         data = std::move(cell->data_);
         cell->sequence_.store(pos + buffer_mask_ + 1, std::memory_order_release);
@@ -165,4 +179,5 @@ private:
     cacheline_pad_t pad3_;
 };
 
-}} // namespace spdlog::details
+} // namespace details
+} // namespace spdlog
