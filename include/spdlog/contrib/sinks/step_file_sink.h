@@ -58,22 +58,9 @@ struct default_step_file_name_calculator
 };
 
 /*
- * The default action when recording starts
- */
-struct default_action_when_recording_starts
-{
-    // Write the start message to the beginning of the file and return its size
-    static size_t beginning_of_file()
-    {
-        return 0;
-    }
-};
-
-/*
  * Rotating file sink based on size and a specified time step
  */
-template<class Mutex, class FileNameCalc = default_step_file_name_calculator, 
-            class RecordingStartActions = default_action_when_recording_starts>
+template<class Mutex, class FileNameCalc = default_step_file_name_calculator>
 class step_file_sink SPDLOG_FINAL : public base_sink<Mutex>
 {
 public:
@@ -126,7 +113,7 @@ protected:
             std::tie(_current_filename, std::ignore) = FileNameCalc::calc_filename(_base_filename, _tmp_ext);
             _file_helper.open(_current_filename);
             _tp = _next_tp();
-            _current_size = msg.formatted.size() + RecordingStartActions::beginning_of_file();
+            _current_size = msg.formatted.size();
         }
         _file_helper.write(msg);
     }
